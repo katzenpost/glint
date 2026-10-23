@@ -44,5 +44,5 @@ jobs:
           key: build-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
           restore-keys: build-
       - run: make test
-      - run: lake build glint
+      - run: lake build echo-chat
       - run: make e2e

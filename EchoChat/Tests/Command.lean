@@ -3,15 +3,15 @@ SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 SPDX-License-Identifier: AGPL-3.0-only
 -/
 
-import Glint.Command
+import EchoChat.Command
 import GroupChatClient.GroupChatKatzenqt1.Shell
-import Glint.Tests.Util
+import EchoChat.Tests.Util
 
 /-! # What each action asks of the core -/
 
-namespace Glint.Tests.CommandTests
+namespace EchoChat.Tests.CommandTests
 
-open Glint Glint.Tests Glint.Command
+open EchoChat EchoChat.Tests EchoChat.Command
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 open Cryptlib.Protocols.GroupComm.Common
 open Cryptlib.Protocols.GroupComm.GroupChatKatzenqt1.Member
@@ -60,4 +60,4 @@ def tests : TestM Unit := do
     (remove s (some "g") bob).note == "that member is no longer in this group")
   check "remove needs a group" (silent (remove s none bob))
 
-end Glint.Tests.CommandTests
+end EchoChat.Tests.CommandTests

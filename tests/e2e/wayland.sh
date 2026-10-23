@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 # SPDX-License-Identifier: AGPL-3.0-only
 #
-# glint showing a saved state under a headless sway.
+# echo-chat showing a saved state under a headless sway.
 set -eu
 cd "$(dirname "$0")/../.."
 WORK=$(mktemp -d)
@@ -14,7 +14,7 @@ output HEADLESS-1 resolution 1280x800
 xwayland disable
 default_border none
 default_floating_border none
-for_window [title="glint"] floating enable
+for_window [title="echo-chat"] floating enable
 exec sh $PWD/tests/e2e/wayland-session.sh > $WORK/session.log 2>&1
 CONF
 env -u DISPLAY -u WAYLAND_DISPLAY XDG_RUNTIME_DIR="$WORK/run" WLR_BACKENDS=headless \

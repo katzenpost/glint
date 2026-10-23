@@ -3,16 +3,16 @@ SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 SPDX-License-Identifier: AGPL-3.0-only
 -/
 
-import Glint.Tests.App
+import EchoChat.Tests.App
 
 /-! # Voice notes
 
 Recording while Hold to talk or Ctrl+Space is held, the draft played, discarded or sent, and
 voice notes received played, with `AppTests.fakeAudio` for the sound system. -/
 
-namespace Glint.Tests.VoiceTests
+namespace EchoChat.Tests.VoiceTests
 
-open Glint Glint.Tests Glint.Tests.AppTests Paw
+open EchoChat EchoChat.Tests EchoChat.Tests.AppTests Paw
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 
 variable {sent : Sent}
@@ -128,7 +128,7 @@ def received : TestM Unit := do
   check "a voice note received shows as one, with Play and Save"
     ((textsOf r "line:5").contains "Voice note" && has r "play:5" && has r "save:5" && !(textsOf r "line:5").contains "ab.opus")
   let r ← click r "play:5"
-  check "Play plays glint's copy" ((← sound.get).playing == some (stateDir / "attachments/g/0-5-ab.opus").toString && has r "stop:5")
+  check "Play plays echo-chat's copy" ((← sound.get).playing == some (stateDir / "attachments/g/0-5-ab.opus").toString && has r "stop:5")
   let r ← click r "stop:5"
   check "and Stop stops it" ((← sound.get).playing.isNone && has r "play:5")
   let r ← click r "play:5"
@@ -148,4 +148,4 @@ def tests : TestM Unit := do
   keys
   received
 
-end Glint.Tests.VoiceTests
+end EchoChat.Tests.VoiceTests

@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: AGPL-3.0-only
-# Two glint windows over the docker mixnet's client daemon.
+# Two echo-chat windows over the docker mixnet's client daemon.
 set -eu
 
 katzenpost_ref=${katzenpost_ref:-$(sed -n 's/^katzenpost_ref?=\(.*\)$/\1/p' Makefile)}

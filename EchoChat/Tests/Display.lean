@@ -4,16 +4,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 -/
 
 import GroupChatClient.GroupChatKatzenqt1.Tests.Net
-import Glint.Tests.Util
-import Glint.Presentation
+import EchoChat.Tests.Util
+import EchoChat.Presentation
 
 /-! # What reaches the screen
 
 A hostile corpus through `name` and `body`, and names that could be taken for another's. -/
 
-namespace Glint.Tests.DisplayTests
+namespace EchoChat.Tests.DisplayTests
 
-open Glint Glint.Tests Paw Paw.Text
+open EchoChat EchoChat.Tests Paw Paw.Text
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 open GroupChatClient.GroupChatKatzenqt1.Tests
 open Cryptlib.Protocols.GroupComm.Common
@@ -37,9 +37,9 @@ def corpusTests : TestM Unit := do
     let n := Display.name s
     check s!"name {repr s} keeps only allowed characters" (nameOk n) fun _ => repr n.text |>.pretty
     check s!"name {repr s} is at most {Display.maxName} characters" (n.text.length ≤ Display.maxName)
-    check s!"name {repr s} holds no ellipsis but glint's" (!(n.text.dropEnd 1).toString.contains '…')
+    check s!"name {repr s} holds no ellipsis but echo-chat's" (!(n.text.dropEnd 1).toString.contains '…')
     check s!"body {repr s} keeps only allowed characters" ((Display.body s).all textOk)
-  check "a long name ends with glint's ellipsis" ((Display.name (String.ofList (List.replicate 80 'w'))).text.endsWith "…")
+  check "a long name ends with echo-chat's ellipsis" ((Display.name (String.ofList (List.replicate 80 'w'))).text.endsWith "…")
   check "a name of marks only is not empty" (!(Display.name "✓✓").text.isEmpty)
   check "markup is shown as text" ((Display.body "<b>bold</b> &amp;").map (·.text) == ["<b>bold</b> &amp;"])
   let long := String.intercalate "\n" ((List.range 30).map toString)
@@ -93,4 +93,4 @@ def tests : TestM Unit := do
   corpusTests
   doubtfulTests
 
-end Glint.Tests.DisplayTests
+end EchoChat.Tests.DisplayTests

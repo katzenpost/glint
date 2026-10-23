@@ -4,17 +4,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 -/
 
 import Paw.Linux
-import Glint.Tests.App
-import Glint.Tests.Files
-import Glint.Tests.Voice
+import EchoChat.Tests.App
+import EchoChat.Tests.Files
+import EchoChat.Tests.Voice
 
 /-! # Pictures of the window
 
 The window drawn offscreen with the bundled fonts, for a person to look at. -/
 
-namespace Glint.Tests.Shot
+namespace EchoChat.Tests.Shot
 
-open Glint Glint.Tests Paw
+open EchoChat EchoChat.Tests Paw
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 open GroupChatClient.GroupChatKatzenqt1.Tests
 
@@ -115,8 +115,8 @@ def readme (path : System.FilePath) : IO Unit := do
   let book : Chat := { name := "book club", joining := some (.awaiting "" .empty .empty .empty) }
   let app := App.app (fun _ => pure ()) AppTests.fakeAudio { state := { me := "alice" }, network := "daemon @katzenpost" }
   let rt := (Paw.Runtime.start app (Rect.ofXYWH 0 0 (px 1000) (px 640)) 0 Linux.measure (motion := false) (theme := Theme.dark)).1
-  let logs := #["18:20:29.973 NOTI glint: started as alice", "18:21:02.114 INFO glint/net: friends: read box 41: 212 bytes",
-    "18:21:15.611 INFO glint/driver: replica epoch 488", "18:21:40.020 INFO glint/net: friends: wrote job 7 at box 12"]
+  let logs := #["18:20:29.973 NOTI echo-chat: started as alice", "18:21:02.114 INFO echo-chat/net: friends: read box 41: 212 bytes",
+    "18:21:15.611 INFO echo-chat/driver: replica epoch 488", "18:21:40.020 INFO echo-chat/net: friends: wrote job 7 at box 12"]
   let (rt, _) := rt.results [App.Msg.state { me := "alice", chats := [friends, work, book] }, .logs logs] 100
   let scene := match rt.present with | .request (.present s) => s | _ => Scene.empty
   IO.FS.writeBinFile path (Linux.renderPng scene 2000 1280 2000)
@@ -130,4 +130,4 @@ def fixture (dir : System.FilePath) : IO Unit := do
   let s : State := { me := "alice", chats := [c, AppTests.chatWith "second" [AppTests.line 0 "a notice"]] }
   IO.FS.writeBinFile (dir / "state.cbor") (GroupChatClient.GroupChatKatzenqt1.Persist.save s)
 
-end Glint.Tests.Shot
+end EchoChat.Tests.Shot

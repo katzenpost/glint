@@ -4,10 +4,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 -/
 
 import Paw
-import Glint.Command
-import Glint.Display
-import Glint.Disk
-import Glint.Voice
+import EchoChat.Command
+import EchoChat.Display
+import EchoChat.Disk
+import EchoChat.Voice
 
 /-! # The window
 
@@ -15,23 +15,23 @@ The groups on the left, the selected conversation in the middle, and on the righ
 reads what is written there, each with the start of their key. Below, a status row, and the log
 when F2 shows it.
 
-glint, not the sender, decides what each part of the window says:
+echo-chat, not the sender, decides what each part of the window says:
 
-- Text from elsewhere reaches a widget only through `Glint.Display`.
+- Text from elsewhere reaches a widget only through `EchoChat.Display`.
 - A member is named `me` or `~name`; a name that could be taken for another's also shows the start
   of its key. Delivery marks sit in a column of their own, and a name cannot hold them.
-- A run of messages begins with a header glint draws, the sender in bold and flush left; every row
-  of a message is indented under it in regular weight, so none can pass for a header. glint's own
+- A run of messages begins with a header echo-chat draws, the sender in bold and flush left; every row
+  of a message is indented under it in regular weight, so none can pass for a header. echo-chat's own
   notices are small, muted and centered, as no message is.
 - The message box only sends text. Everything else is a button, and what uses authority (a dialog,
   copying, reading or writing a file) happens only for the user's own click. The window's title is
-  always "glint".
+  always "echo-chat".
 - A file is read only once the user chose it and clicked Send, and one received is written out only
-  where they chose to save it; a picture received is shown from glint's own copy.
+  where they chose to save it; a picture received is shown from echo-chat's own copy.
 - The microphone records only while the user holds the Hold to talk button or Ctrl+Space, and what
   it recorded is sent only once they click Send. -/
 
-namespace Glint.App
+namespace EchoChat.App
 
 open Paw
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
@@ -172,9 +172,9 @@ structure Model where
   dialog : Option Dialog := none
   outer : Nat := 220
   inner : Nat := 760
-  /-- What glint is connected to. -/
+  /-- What echo-chat is connected to. -/
   network : String := ""
-  /-- The dark theme, glint's own default; the light one only when asked for. -/
+  /-- The dark theme, echo-chat's own default; the light one only when asked for. -/
   dark : Bool := true
   /-- The local time zone, in seconds from UTC, for showing when lines were said. -/
   zone : Int := 0
@@ -249,7 +249,7 @@ def memberByHex (m : Model) (hex : String) : Option Cryptlib.Protocols.GroupComm
 
 end Model
 
-/-- What the core is asked, and glint's note on it; the message goes to the core on a task. -/
+/-- What the core is asked, and echo-chat's note on it; the message goes to the core on a task. -/
 def perform {o : Origin} (post : GroupChatKatzenqt1.Msg → IO Unit) (a : Command.Asked) :
     UpdateM Model Msg caps o Unit := do
   modify fun (m, cs) => ({ m with note := a.note, want := a.want.orElse fun _ => m.want }, cs)
@@ -612,12 +612,12 @@ def messageView (r : MessageRow) : Node Msg :=
   Ui.row [Ui.width (px 12) Ui.spacer, Ui.col (spacing := px 4) body, Ui.spacer,
     Ui.width (px 24) (Ui.caption (SafeText.trusted r.mark))] (px 6)
 
-/-- A notice of glint's as drawn. -/
+/-- A notice of echo-chat's as drawn. -/
 structure NoticeRow where
   lines : List SafeText
   deriving BEq, TypeName
 
-/-- glint's own notice: small and muted, centered, as no message is. -/
+/-- echo-chat's own notice: small and muted, centered, as no message is. -/
 def noticeView (r : NoticeRow) : Node Msg :=
   Ui.row [Ui.spacer, Ui.col (spacing := 0) (r.lines.map fun t =>
     Ui.text t (maxLines := 4) (tone := .muted) (size := .caption)), Ui.spacer]
@@ -650,7 +650,7 @@ def fileRow (m : Model) (c : Chat) (l : Line) (a : Attachment) : FileRow :=
     { line := l.id, name := SafeText.trusted "Voice note", detail, voice := some playing }
   else { line := l.id, name := Display.text a.name, detail, picture }
 
-/-- A conversation as runs: each run of one sender's messages under one header, glint's notices
+/-- A conversation as runs: each run of one sender's messages under one header, echo-chat's notices
 alone, and a date between runs of different days. -/
 def conversation (m : Model) (c : Chat) : Node Msg :=
   let me := m.state.me
@@ -864,7 +864,7 @@ def bindings : List (Widgets.KeyCombo × Msg) :=
 
 def view (m : Model) : Node Msg :=
   Voice.keys bindings .holdStart .holdEnd <| Ui.themed (if m.dark then Theme.dark else Theme.light) <|
-  if m.blank then Ui.pad (px 24) (Ui.label "glint · F10 to return" "blank") else
+  if m.blank then Ui.pad (px 24) (Ui.label "echo-chat · F10 to return" "blank") else
   let (middle, right) := match m.current with
     | some c => (conversationPane m c, membersPane m c)
     | none => (empty, Ui.surface Ui.spacer)
@@ -877,4 +877,4 @@ def app (post : GroupChatKatzenqt1.Msg → IO Unit) (audio : Voice.Audio) (init 
     (start : List (Cmd Msg caps .other) := []) : App caps :=
   { Model := Model, Msg := Msg, init := { init with soundOff := audio.off }, update := update post audio, view, start }
 
-end Glint.App
+end EchoChat.App

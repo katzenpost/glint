@@ -3,21 +3,21 @@ SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 SPDX-License-Identifier: AGPL-3.0-only
 -/
 
-import Glint.Presentation
+import EchoChat.Presentation
 import GroupChatClient.GroupChatKatzenqt1.Shell
-import Glint.Tests.App
+import EchoChat.Tests.App
 import GroupChatClient.GroupChatKatzenqt1.Sim
 
 /-! # Two members, each with a window
 
-Alice and Bob in one process over the simulated Pigeonhole, each with a `Shell`, as glint runs
-it, and a glint window driven by clicks and typing. What each shell displays reaches its window as
+Alice and Bob in one process over the simulated Pigeonhole, each with a `Shell`, as echo-chat runs
+it, and an echo-chat window driven by clicks and typing. What each shell displays reaches its window as
 the producer's messages do, through `Runtime.results`. The shells run on real time, so this takes
 a while. -/
 
-namespace Glint.Tests.Members
+namespace EchoChat.Tests.Members
 
-open Glint Glint.Tests Paw Logger
+open EchoChat EchoChat.Tests Paw Logger
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 
 /-- Calls to `b` one at a time, as the daemon takes them. -/
@@ -53,8 +53,8 @@ def start (backend : Backend) (me : String) (dir : System.FilePath) (log : Logge
   let (core, resumed) := resume presentation { me } (← backend.maxPlaintext)
   let shell : Shell :=
     { backend, core := ← IO.mkRef core, inbox := ← Std.CloseableChannel.new,
-      log := log.withModule s!"glint/{me}", statePath := dir / s!"{me}.cbor",
-      display := latest.set, stop, app := "glint" }
+      log := log.withModule s!"echo-chat/{me}", statePath := dir / s!"{me}.cbor",
+      display := latest.set, stop, app := "echo-chat" }
   shell.start resumed
   let rt := (Paw.Runtime.start (memberApp shell me) (Rect.ofXYWH 0 0 (px 1000) (px 700)) 0 Env.mock.measure).1
   return { me, shell, latest, rt := ← IO.mkRef rt, now := ← IO.mkRef 0, clipboard := ← IO.mkRef [] }
@@ -126,7 +126,7 @@ def lineOf (m : Member) (text : String) : IO (Option (List String)) := do
 def tests : TestM Unit := do
   let world ← IO.mkRef ({} : Sim.World)
   let backend ← serialized (Sim.backend world)
-  let dir : System.FilePath := ".lake/glint-members"
+  let dir : System.FilePath := ".lake/echo-chat-members"
   IO.FS.createDirAll dir
   for f in ["alice.cbor", "bob.cbor"] do
     try IO.FS.removeFile (dir / f) catch _ => pure ()
@@ -183,4 +183,4 @@ def tests : TestM Unit := do
     stop.set true
     for m in both do discard <| m.shell.inbox.close
 
-end Glint.Tests.Members
+end EchoChat.Tests.Members

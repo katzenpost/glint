@@ -9,10 +9,10 @@ import GroupChatClient.GroupChatKatzenqt1.State
 /-! # What may reach the screen
 
 Text from the network reaches a widget only as Paw's `SafeText` or `SafeName`. This module adds
-glint's own rules on top of Paw's: what a member's name may hold and how long it may be, and how a
+echo-chat's own rules on top of Paw's: what a member's name may hold and how long it may be, and how a
 member is named, since a display name is only what its owner chose. -/
 
-namespace Glint.Display
+namespace EchoChat.Display
 
 open Paw Paw.Text
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
@@ -22,7 +22,7 @@ open Cryptlib.Protocols.GroupComm.GroupChatKatzenqt1.Member
 /-- Characters of a name shown. -/
 def maxName : Nat := 30
 
-/-- Characters a name may not hold, even where a message may: glint's marks of a message's state
+/-- Characters a name may not hold, even where a message may: echo-chat's marks of a message's state
 (`…`, `✓`, `✓✓`), crosses and locks, and the substitute Paw shows for a character refused. -/
 def mark (n : Nat) : Bool :=
   inRanges n [(0x2713, 0x2718), (0x2026, 0x2026), (0x1F512, 0x1F513), (0x1F6E1, 0x1F6E1),
@@ -34,8 +34,8 @@ def text (s : String) : SafeText := SafeText.filter s
 /-- A message's text as lines, at most 20, the last saying how many more there were. -/
 def body (s : String) : List SafeText := SafeText.lines s 20
 
-/-- A member's name: one line, none of glint's marks, at most `maxName` characters, the rest cut
-with an ellipsis glint draws. -/
+/-- A member's name: one line, none of echo-chat's marks, at most `maxName` characters, the rest cut
+with an ellipsis echo-chat draws. -/
 def name (s : String) : SafeName :=
   let kept := (SafeName.filter s).text.toList.map fun c => if mark c.toNat then '?' else c
   let kept := if kept.isEmpty then ['?'] else kept
@@ -161,4 +161,4 @@ def groupRow (seen : List (String × Nat)) (c : Chat) : String :=
     else if c.group.isNone then " …" else ""
   (name c.name).text ++ (if n > 0 then s!" ({n})" else "") ++ state
 
-end Glint.Display
+end EchoChat.Display

@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import Paw
 import RusticAudio
 import Cryptlib.Primitives.Hash.Sha2
-import Glint.Display
+import EchoChat.Display
 
 /-! # Voice notes
 
@@ -14,12 +14,12 @@ Recording a voice note while a button or Ctrl+Space is held, and playing voice n
 Rustic Audio. A voice note goes to the group as a file `<sha256>.opus` of type `audio/opus`, as
 katzenqt names them, so that its name tells nothing of when or by whom it was recorded. -/
 
-namespace Glint.Voice
+namespace EchoChat.Voice
 
 open Paw Paw.Widgets
 open RusticAudio (Clip)
 
-/-- What glint asks of the sound system. -/
+/-- What echo-chat asks of the sound system. -/
 structure Audio where
   start : IO Unit
   stop : IO Clip
@@ -52,9 +52,9 @@ def Audio.engine (e : RusticAudio.Engine) : Audio where
 
 /-- The sound system, with drafts kept in `dir`; or none, and why. -/
 def Audio.open (dir : System.FilePath) : IO Audio := do
-  if !RusticAudio.abiMatches then return .silent "the sound library does not match glint"
+  if !RusticAudio.abiMatches then return .silent "the sound library does not match echo-chat"
   try
-    -- A draft not sent before glint stopped is not kept.
+    -- A draft not sent before echo-chat stopped is not kept.
     if ← dir.pathExists then IO.FS.removeDirAll dir
     IO.FS.createDirAll dir
     return .engine (← RusticAudio.Engine.new dir.toString)
@@ -119,4 +119,4 @@ def keysWidget {Msg : Type} (bindings : List (KeyCombo × Msg)) (onPress onRelea
 def keys {Msg : Type} (bindings : List (KeyCombo × Msg)) (onPress onRelease : Msg) (child : Node Msg) : Node Msg :=
   Node.containerWith (keysWidget bindings onPress onRelease) (box { expand := true }) [child]
 
-end Glint.Voice
+end EchoChat.Voice

@@ -3,9 +3,9 @@ SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 SPDX-License-Identifier: AGPL-3.0-only
 -/
 
-import Glint.App
+import EchoChat.App
 import GroupChatClient.GroupChatKatzenqt1.Shell
-import Glint.Tests.Display
+import EchoChat.Tests.Display
 
 /-! # The window
 
@@ -13,9 +13,9 @@ The app driven through `Paw.Runtime` as the platform drives it: clicks and keys 
 from the shell as messages of origin `other`, and the tasks it starts run here, posting to a fake
 inbox. -/
 
-namespace Glint.Tests.AppTests
+namespace EchoChat.Tests.AppTests
 
-open Glint Glint.Tests Paw
+open EchoChat EchoChat.Tests Paw
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 open Cryptlib.Protocols.GroupComm.Common
 open Cryptlib.Protocols.GroupComm.GroupChatKatzenqt1.Member
@@ -23,7 +23,7 @@ open Cryptlib.Protocols.GroupComm.GroupChatKatzenqt1.Member
 abbrev Sent := IO.Ref (Array GroupChatKatzenqt1.Msg)
 
 /-- Where the tests keep files: the state directory, and a home with files to send. -/
-def testDir : System.FilePath := ".lake/glint-test"
+def testDir : System.FilePath := ".lake/echo-chat-test"
 
 /-- The fake sound system: what it was asked, and what it does. -/
 structure Sound where
@@ -136,7 +136,7 @@ def textsOf (r : Run sent) (k : String) : List String :=
 
 partial def kinds {Msg : Type} (n : Node Msg) : List String := n.kind :: n.children.flatMap kinds
 
-/-- The texts the widget keyed `k` draws, with their styles, in glint's dark theme. -/
+/-- The texts the widget keyed `k` draws, with their styles, in echo-chat's dark theme. -/
 def stylesOf (r : Run sent) (k : String) : List (String × TextStyle) :=
   match r.rt.tree.findKey? k with
   | some n => (n.render { r.rt.env with theme := Theme.dark }).items.filterMap fun
@@ -196,7 +196,7 @@ def selection : TestM Unit := do
   let r ← key r .pageUp { ctrl := true }
   check "Ctrl+PageUp selects the group before" (r.rt.model.selected == some "h")
   let r ← key r (.f 10)
-  check "F10 blanks the window" ((textsOf r "blank") == ["glint · F10 to return"] && (r.rt.tree.findKey? "groups").isNone)
+  check "F10 blanks the window" ((textsOf r "blank") == ["echo-chat · F10 to return"] && (r.rt.tree.findKey? "groups").isNone)
   let r ← key r (.f 10)
   check "and F10 brings it back" (r.rt.tree.findKey? "groups").isSome
   check "the log is hidden at first" ((r.rt.tree.findKey? "log").isNone)
@@ -374,7 +374,7 @@ def background {caps : List Cap} {app : Paw.App caps} (rt : Runtime app) : Optio
 def theme : TestM Unit := do
   let sent ← IO.mkRef #[]
   let r := begin sent
-  check "glint is dark by default" (background r.rt == some Theme.dark.background)
+  check "echo-chat is dark by default" (background r.rt == some Theme.dark.background)
   let light := App.app (fun m => sent.modify (·.push m)) fakeAudio { state := { me := "alice" }, dark := false }
   let rt := (Paw.Runtime.start light (Rect.ofXYWH 0 0 (px 1000) (px 700)) 0 Env.mock.measure).1
   check "and light when asked" (background rt == some Theme.light.background)
@@ -420,4 +420,4 @@ def tests : TestM Unit := do
   copy
   rendering
 
-end Glint.Tests.AppTests
+end EchoChat.Tests.AppTests

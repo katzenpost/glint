@@ -4,7 +4,7 @@
 #
 # Keeps each member's logs and state when a check fails, and says where.
 set -eu
-WORK=$(mktemp -d "${TMPDIR:-/tmp}/glint-mixnet.XXXXXX")
+WORK=$(mktemp -d "${TMPDIR:-/tmp}/echo-chat-mixnet.XXXXXX")
 export WORK
 # ALSA's null device, as a speaker that needs no hardware.
 printf 'pcm.!default { type null }\nctl.!default { type hw card 0 }\n' > "$WORK/asound.conf"

@@ -4,17 +4,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 -/
 
 import Paw.Linux
-import Glint.App
-import Glint.Presentation
+import EchoChat.App
+import EchoChat.Presentation
 import GroupChatClient.LogPane
 import GroupChatClient.GroupChatKatzenqt1.Daemon
 import GroupChatClient.GroupChatKatzenqt1.Shell
 
-/-! # glint
+/-! # echo-chat
 
 A desktop group chat over the Katzenpost mixnet that speaks katzenqt's group chat. -/
 
-open Glint Logger
+open EchoChat Logger
 open GroupChatClient.GroupChatKatzenqt1.Persist
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 
@@ -28,9 +28,9 @@ structure Config where
   offline : Bool := false
 
 def usage : String :=
-  "usage: glint [--daemon @katzenpost | PATH | HOST:PORT] [--state DIR] [--name NAME] [--log FILE] [--offline]
-The state directory is $XDG_DATA_HOME/glint/$GLINT_STATE (default: default).
-The log level is GLINT_LOG: critical, error, warning, notice, info (the default) or debug."
+  "usage: echo-chat [--daemon @katzenpost | PATH | HOST:PORT] [--state DIR] [--name NAME] [--log FILE] [--offline]
+The state directory is $XDG_DATA_HOME/echo-chat/$ECHO_CHAT_STATE (default: default).
+The log level is ECHO_CHAT_LOG: critical, error, warning, notice, info (the default) or debug."
 
 def parseArgs : Config → List String → Except String Config
   | c, [] => pure c
@@ -45,7 +45,11 @@ def defaultStateDir : IO System.FilePath := do
   let base ← match ← IO.getEnv "XDG_DATA_HOME" with
     | some d => pure (d : System.FilePath)
     | none => pure ((← IO.getEnv "HOME").getD "." / ".local" / "share")
-  pure (base / "glint" / ((← IO.getEnv "GLINT_STATE").getD "default"))
+  -- echo-chat was called glint before; a state kept under the old name moves over, once.
+  let old := base / "glint"
+  if !(← (base / "echo-chat").pathExists) && (← old.pathExists) then
+    IO.FS.rename old (base / "echo-chat")
+  pure (base / "echo-chat" / ((← IO.getEnv "ECHO_CHAT_STATE").getD "default"))
 
 def connect (daemon : String) : IO ThinClient.Client := do
   let dial ← if daemon.startsWith "@" || daemon.startsWith "/" then
@@ -119,14 +123,14 @@ where
     | none => defaultStateDir
   IO.FS.createDirAll dir
   IO.setAccessRights dir { user := { read := true, write := true, execution := true } }
-  let logPath := cfg.logFile.getD (dir / "glint.log")
+  let logPath := cfg.logFile.getD (dir / "echo-chat.log")
   let logFile ← Logger.Output.open (.file logPath)
   IO.setAccessRights logPath GroupChatClient.private_
   let logLines ← IO.mkRef (#[] : Array String)
   -- The pane shows the log once the window is up; until then lines only go to the file.
   let showLogs ← IO.mkRef (fun (_ : Array String) => (pure () : IO Unit))
   let log ← Logger.new (.stream (LogPane.stream Display.logLine logFile logLines fun ls => do (← showLogs.get) ls))
-    (← Level.fromEnv "GLINT_LOG" .info) "glint"
+    (← Level.fromEnv "ECHO_CHAT_LOG" .info) "echo-chat"
   let statePath := dir / "state.cbor"
   let saved : Option State ← if ← statePath.pathExists then
       pure (load (← IO.FS.readBinFile statePath))
@@ -136,7 +140,7 @@ where
   let me := cfg.name.getD ((saved.map (·.me)).getD ((← IO.getEnv "USER").getD "me"))
   let state := { (saved.getD { me }) with me }
   onSignals log
-  let title := "glint"
+  let title := "echo-chat"
   let dark := (← IO.getEnv "PAW_THEME") != some "light"
   let zone ← localZone
   let home := (← IO.getEnv "HOME").getD dir.toString
@@ -161,7 +165,7 @@ where
   let producer (send : App.Msg → IO Unit) : IO Unit := do
     showLogs.set fun ls => try send (.logs ls) catch _ => pure ()
     let display ← coalesce (send ∘ .state) stop
-    let sh : Shell := { backend, core := ← IO.mkRef core, inbox, log, statePath, display, stop, app := "glint" }
+    let sh : Shell := { backend, core := ← IO.mkRef core, inbox, log, statePath, display, stop, app := "echo-chat" }
     sh.start resumed
   let logs ← logLines.get
   let network := s!"daemon {cfg.daemon}"

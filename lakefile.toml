@@ -1,9 +1,9 @@
-name = "glint"
-version = "0.1.0"
+name = "echo_chat"
+version = "0.2.0"
 description = "A desktop group chat over the Katzenpost mixnet, in Lean, on Paw and cryptlib"
 keywords = ["chat", "gui", "mixnet", "katzenpost", "privacy"]
 license = "AGPL-3.0-only"
-defaultTargets = ["glint"]
+defaultTargets = ["echo-chat"]
 
 [leanOptions]
 autoImplicit = false
@@ -46,14 +46,14 @@ git = "https://github.com/katzenpost/cryptlib.git"
 rev = "6f651738d26db5ac18dd5670bf501cfc63723175"
 
 [[lean_lib]]
-name = "Glint"
+name = "EchoChat"
 
 [[lean_exe]]
-name = "glint"
-root = "Glint.Main"
+name = "echo-chat"
+root = "EchoChat.Main"
 moreLinkArgs = ["-Wl,--allow-shlib-undefined", "/usr/lib/x86_64-linux-gnu/libasound.so.2"]
 
 [[lean_exe]]
-name = "glint-test"
-root = "Glint.Tests.Main"
+name = "echo-chat-test"
+root = "EchoChat.Tests.Main"
 moreLinkArgs = ["-Wl,--allow-shlib-undefined", "/usr/lib/x86_64-linux-gnu/libasound.so.2"]

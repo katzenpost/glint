@@ -42,8 +42,8 @@ jobs:
             ~/.cargo/git
           key: build-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
           restore-keys: build-
-      - name: Build glint
-        run: lake exe cache get && lake build glint
+      - name: Build echo-chat
+        run: lake exe cache get && lake build echo-chat
       - name: Run two windows against the docker mixnet
         timeout-minutes: 60
         run: ./test-integration.sh

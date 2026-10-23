@@ -221,6 +221,6 @@
    "inputRev": "v4.33.1",
    "inherited": true,
    "configFile": "lakefile.toml"}],
- "name": "glint",
+ "name": "echo_chat",
  "lakeDir": ".lake",
  "fixedToolchain": false}

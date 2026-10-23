@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 SPDX-License-Identifier: AGPL-3.0-only
 -/
 
-namespace Glint.Tests
+namespace EchoChat.Tests
 
 abbrev TestM := StateT (Nat × Nat) IO
 
@@ -23,4 +23,4 @@ def runSuite (name : String) (t : TestM Unit) : IO Bool := do
   IO.println s!"{name}: {pass} passed, {fail} failed"
   return fail == 0
 
-end Glint.Tests
+end EchoChat.Tests

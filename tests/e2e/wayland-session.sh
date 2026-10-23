@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 # SPDX-License-Identifier: AGPL-3.0-only
 #
-# glint showing a saved state, driven with Paw's virtual pointer and wtype's keyboard. Run by
+# echo-chat showing a saved state, driven with Paw's virtual pointer and wtype's keyboard. Run by
 # wayland.sh as sway's startup command; writes its result to $WORK/result and stops sway.
 set -u
 cd "$(dirname "$0")/../.."
@@ -19,11 +19,11 @@ mkfifo "$WORK/pointer"
 .lake/packages/paw/rust/target/release/examples/vpointer 1280 800 < "$WORK/pointer" > "$WORK/pointer.out" 2>&1 &
 exec 3> "$WORK/pointer"
 wait_for "$WORK/pointer.out" '^ready' || { fail "a virtual pointer"; finish; }
-.lake/build/bin/glint-test --fixture "$WORK/state"
-start_glint alice --offline --state "$WORK/state"
-wait_for "$WORK/alice.layout" '^group:second ' || { fail "glint reported its layout"; finish; }
+.lake/build/bin/echo-chat-test --fixture "$WORK/state"
+start_echo_chat alice --offline --state "$WORK/state"
+wait_for "$WORK/alice.layout" '^group:second ' || { fail "echo-chat reported its layout"; finish; }
 sleep 1
-ORIGIN=$(swaymsg -t get_tree | jq -r '.. | objects | select(.name? == "glint") |
+ORIGIN=$(swaymsg -t get_tree | jq -r '.. | objects | select(.name? == "echo-chat") |
   "\(.rect.x + .window_rect.x) \(.rect.y + .window_rect.y)"' | head -n 1)
 set -- $ORIGIN
 OX=$1
@@ -37,7 +37,7 @@ click() {
 }
 
 expect alice 'selected=g ' "the saved state's first group is selected"
-expect_idle alice "an idle glint does not wake"
+expect_idle alice "an idle echo-chat does not wake"
 click group:second
 expect alice 'selected=second ' "a click selects another group"
 click draft

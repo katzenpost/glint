@@ -8,9 +8,9 @@ import GroupChatClient.GroupChatKatzenqt1.Core
 /-! # What each action asks of the core
 
 One function per thing the user can do: the checks it needs, the message for the core, the group
-to select once it appears, and glint's note on it. -/
+to select once it appears, and echo-chat's note on it. -/
 
-namespace Glint.Command
+namespace EchoChat.Command
 
 open Cryptlib.Protocols.GroupComm.Common
 open Cryptlib.Protocols.GroupComm.GroupChatKatzenqt1.Member
@@ -91,4 +91,4 @@ def remove (s : State) (chat : Option String) (who : Key) : Asked :=
     else if c.group.any (·.readers.contains who) then { msg := some (.remove c.name who) }
     else { note := "that member is no longer in this group" }
 
-end Glint.Command
+end EchoChat.Command

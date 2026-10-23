@@ -3,17 +3,17 @@ SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 SPDX-License-Identifier: AGPL-3.0-only
 -/
 
-import Glint.Display
-import Glint.Display
-import Glint.Tests.Util
+import EchoChat.Display
+import EchoChat.Display
+import EchoChat.Tests.Util
 
 /-! # Times and runs
 
 Times and dates shown, and a conversation cut into runs. -/
 
-namespace Glint.Tests.StateTests
+namespace EchoChat.Tests.StateTests
 
-open Glint Glint.Tests
+open EchoChat EchoChat.Tests
 open GroupChatClient GroupChatClient.GroupChatKatzenqt1
 open Cryptlib.Protocols.GroupComm.Common
 open Cryptlib.Protocols.GroupComm.GroupChatKatzenqt1.Member
@@ -42,4 +42,4 @@ def tests : TestM Unit := do
     ["bob[0, 1]", "carol[2, 3]", "notice9", "carol[4]", "carol[5]"] shape
   checkEq "a run's first line" (some 0) ((runs.head?.bind Display.Run.first).map (fun (l : Line) => l.id))
 
-end Glint.Tests.StateTests
+end EchoChat.Tests.StateTests

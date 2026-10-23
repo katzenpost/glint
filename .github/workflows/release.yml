@@ -57,7 +57,7 @@ jobs:
           cd dist-ubuntu-24.04 && sha256sum -c SHA256SUMS
       - uses: actions/attest-build-provenance@v4
         with:
-          subject-path: dist-ubuntu-24.04/glint-*
+          subject-path: dist-ubuntu-24.04/echo-chat-*
       - name: publish
         if: startsWith(github.ref, 'refs/tags/')
         env:

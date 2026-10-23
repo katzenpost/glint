@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2026 David Stainton
 # SPDX-License-Identifier: AGPL-3.0-only
 #
-# N glint windows on one X display, against one client daemon, driven with xdotool as N people
+# N echo-chat windows on one X display, against one client daemon, driven with xdotool as N people
 # would. The first founds a group; the others join it in waves, each member already in inviting
 # one joiner at a time, with the voucher code copied from the joiner's window. Then everyone sends,
 # everyone reads everyone, and a second round of messages acknowledges the first. Last, the first
@@ -20,7 +20,7 @@ FIRST=alice
 
 i=0
 for m in $ALL; do
-  start_glint "$m" --daemon "$DAEMON" --name "$m" --state "$WORK/$m"
+  start_echo_chat "$m" --daemon "$DAEMON" --name "$m" --state "$WORK/$m"
   w=$(xdotool search --sync --pid "$(eval echo "\$PID_$m")" | head -n 1)
   eval "W_$m=$w"
   # Three to a row: with no window manager, a click goes to whichever window is on top there.
@@ -62,7 +62,7 @@ answer() {
 
 others() { for o in $ALL; do [ "$o" != "$1" ] && printf '%s ' "$o"; done; }
 
-expect_idle alice "an idle glint does not wake"
+expect_idle alice "an idle echo-chat does not wake"
 
 click $FIRST new-group
 answer $FIRST g
